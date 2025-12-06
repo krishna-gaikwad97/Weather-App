@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import { use, useState } from 'react';
 import { set } from 'mongoose';
 
-export default function Searchbox(){
+export default function Searchbox({updateinfo}){
      let [city, setcity]=useState("");
     const API_URl=" https://api.openweathermap.org/data/2.5/weather";
    //?q=delhi&appid=YOUR_KEY
@@ -14,6 +14,7 @@ export default function Searchbox(){
       let jsonResponse = await response.json();
      // console.log(jsonResponse);
       let result={
+        city:city,
         temp:jsonResponse.main.temp,
         mintemp:jsonResponse.main.temp_min,
         maxtemp:jsonResponse.main.temp_max,
@@ -22,6 +23,7 @@ export default function Searchbox(){
         weatherType:jsonResponse.weather[0].description,
       };
       console.log(result);
+      return result;
 
     }
     //?q={city name}&appid={API key}
@@ -29,20 +31,22 @@ export default function Searchbox(){
     let handleChange=(event)=>{
         setcity(event.target.value);
     }
-    let handleSubmit=(event)=>{
+    let handleSubmit=async(event)=>{
         event.preventDefault();
         console.log("Form Submitted", city);
         setcity("");
-        getweatherinfo();
+        let info=await getweatherinfo();
+        updateinfo(info);
     }   
     return(
     <div>
-        <h3>Search for Weather</h3>
+        
         <form onSubmit={handleSubmit}>
              <TextField id="city" label="City Name" variant="outlined" required value={city} onChange={handleChange}/>
              <br></br>
              <br></br>
-             <Button variant="outlined" type='submit'>Search</Button>
+             <Button variant="contained" type='submit'>Search</Button>
+            
         </form>
     </div>    
     )
